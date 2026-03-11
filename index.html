@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Song Finder</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3011/3011122.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00ffcc;
@@ -15,7 +15,7 @@
 
         body {
             margin: 0;
-            overflow: hidden; /* Prevents sideways scrolling on mobile */
+            overflow: hidden; 
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-dark);
             color: white;
@@ -26,11 +26,12 @@
             width: 100vw;
         }
 
+        /* Fixed Background: Seamless Infinite Scroll */
         .background-wrapper {
             position: absolute;
             top: -20%;
             left: -20%;
-            width: 250vw; /* Extra width so mobile doesn't run out of images */
+            width: 150vw;
             height: 150vh;
             display: flex;
             flex-direction: column;
@@ -42,6 +43,7 @@
 
         .album-row {
             display: flex;
+            width: max-content; /* This ensures the row stretches exactly to fit all images */
             gap: 15px;
             animation: scroll 40s linear infinite;
         }
@@ -51,8 +53,8 @@
         }
 
         .album-cover {
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 12px;
             object-fit: cover;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
@@ -64,41 +66,46 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at center, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.95) 100%);
+            background: radial-gradient(circle at center, rgba(10,10,10,0.4) 0%, rgba(10,10,10,0.95) 100%);
             z-index: -1;
         }
 
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes scroll-reverse { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 
+        /* Main Glass Card */
         .glass-card {
             background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 40px;
-            width: 400px;
-            max-width: 85%; /* Mobile responsiveness core */
+            width: 420px;
+            max-width: 85%;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.1);
             z-index: 10;
-            position: relative;
+            max-height: 90vh;
+            overflow-y: auto; /* Allows scrolling inside the card if content gets too tall */
         }
+
+        /* Custom Scrollbar for the card */
+        .glass-card::-webkit-scrollbar { width: 6px; }
+        .glass-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 
         h2 {
             margin-top: 0;
-            font-weight: 600;
-            font-size: 28px;
+            font-weight: 700;
+            font-size: 30px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 25px;
+            letter-spacing: 1px;
         }
 
-        .search-wrapper {
-            position: relative;
-        }
+        .search-wrapper { position: relative; }
 
         input[type="text"] {
             width: 100%;
@@ -108,7 +115,7 @@
             border-radius: 12px;
             background: rgba(0, 0, 0, 0.5);
             color: white;
-            font-size: 16px; /* 16px prevents automatic zoom on mobile keyboards */
+            font-size: 16px;
             font-family: 'Poppins', sans-serif;
             outline: none;
             box-sizing: border-box;
@@ -118,36 +125,6 @@
         input[type="text"]:focus {
             border-color: var(--primary);
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
-        }
-
-        .suggestions-box {
-            position: absolute;
-            top: 58px;
-            left: 0;
-            width: 100%;
-            background: rgba(15, 15, 15, 0.98);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
-            display: none;
-            flex-direction: column;
-            z-index: 20;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-
-        .suggestion-item {
-            padding: 12px 15px;
-            text-align: left;
-            font-size: 14px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: #ddd;
-        }
-
-        .suggestion-item:hover {
-            background: rgba(0, 255, 204, 0.1);
-            color: var(--primary);
         }
 
         .filters {
@@ -167,12 +144,10 @@
             font-size: 14px;
             outline: none;
             cursor: pointer;
-            -webkit-appearance: none; /* Cleans up default mobile dropdown styling */
+            -webkit-appearance: none;
         }
 
-        select:focus {
-            border-color: var(--secondary);
-        }
+        select:focus { border-color: var(--secondary); }
 
         button {
             background: linear-gradient(135deg, var(--primary), #0099ff);
@@ -180,7 +155,7 @@
             padding: 16px 20px;
             border-radius: 12px;
             color: #000;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
             cursor: pointer;
             width: 100%;
@@ -190,9 +165,7 @@
             letter-spacing: 1px;
         }
 
-        button:active {
-            transform: scale(0.98); /* Better feedback for mobile tapping */
-        }
+        button:active { transform: scale(0.98); }
 
         .spinner {
             display: none;
@@ -207,45 +180,63 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* The New Result UI */
         #result {
             margin-top: 25px;
             display: none;
             background: rgba(0, 0, 0, 0.4);
             padding: 20px;
-            border-radius: 12px;
+            border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.4s ease;
         }
 
-        #songTitle { font-size: 15px; font-weight: 400; margin-top: 0; margin-bottom: 15px; color: #fff; line-height: 1.4; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #resultArt {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        #songTitle { font-size: 18px; font-weight: 600; margin: 0 0 5px 0; color: #fff; }
+        #artistName { font-size: 14px; font-weight: 300; margin: 0 0 15px 0; color: var(--primary); }
+        
+        audio {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            outline: none;
+        }
 
         .download-btn {
-            display: inline-block;
+            display: block;
             text-decoration: none;
-            background: var(--secondary);
+            background: transparent;
+            border: 2px solid var(--secondary);
             color: white;
-            padding: 14px 25px;
+            padding: 12px 25px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
-            width: 80%;
-            box-shadow: 0 5px 15px rgba(176, 38, 255, 0.4);
+            width: calc(100% - 50px);
+            margin: 0 auto;
+            transition: all 0.3s;
         }
 
-        /* 📱 MOBILE RESPONSIVE RULES */
+        .download-btn:hover {
+            background: var(--secondary);
+            box-shadow: 0 0 15px rgba(176, 38, 255, 0.5);
+        }
+
         @media (max-width: 480px) {
-            .glass-card {
-                padding: 30px 20px;
-            }
-            .filters {
-                flex-direction: column; /* Stacks dropdowns vertically on small screens */
-            }
-            h2 {
-                font-size: 24px;
-            }
-            .album-cover {
-                width: 150px; /* Smaller background covers for mobile */
-                height: 150px;
-            }
+            .glass-card { padding: 30px 20px; }
+            .filters { flex-direction: column; }
+            .album-cover { width: 160px; height: 160px; }
         }
     </style>
 </head>
@@ -253,18 +244,32 @@
 
 <div class="background-wrapper">
     <div class="album-row">
-        <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1493225457124-a1a2a5ea3a0f?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
+        <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1493225457124-a1a2a5ea3a0f?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1493225457124-a1a2a5ea3a0f?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" class="album-cover" alt="music">
     </div>
     <div class="album-row reverse">
-        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1516280440502-37f8ce2f0099?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
-        <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop" class="album-cover" alt="music vibe">
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1516280440502-37f8ce2f0099?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1458560871784-56d23406c091?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1516280440502-37f8ce2f0099?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1458560871784-56d23406c091?w=400&h=400&fit=crop" class="album-cover" alt="music">
+        <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=400&h=400&fit=crop" class="album-cover" alt="music">
     </div>
 </div>
 
@@ -274,10 +279,7 @@
     <h2>Neon Search</h2>
     
     <div class="search-wrapper">
-        <input type="text" id="songInput" placeholder="Search a song..." onkeyup="handleTyping()" autocomplete="off">
-        
-        <div class="suggestions-box" id="suggestionsBox">
-            </div>
+        <input type="text" id="songInput" placeholder="Search a song..." autocomplete="off">
     </div>
 
     <div class="filters">
@@ -298,54 +300,26 @@
     <div class="spinner" id="spinner"></div>
     
     <div id="result">
+        <img id="resultArt" src="" alt="Album Art">
         <h3 id="songTitle"></h3>
+        <p id="artistName"></p>
+        
+        <audio id="audioPlayer" controls controlsList="nodownload">
+            Your browser does not support the audio element.
+        </audio>
+
         <a href="#" id="downloadLink" class="download-btn" target="_blank" download>Download MP3</a>
     </div>
 </div>
 
 <script>
     const inputField = document.getElementById('songInput');
-    const suggestionsBox = document.getElementById('suggestionsBox');
-    let typingTimer;
 
     inputField.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
-            // Closes mobile keyboard when enter is pressed
             inputField.blur(); 
-            suggestionsBox.style.display = 'none';
             searchSong();
-        }
-    });
-
-    function handleTyping() {
-        clearTimeout(typingTimer);
-        const query = inputField.value.trim();
-        
-        if (query.length < 2) {
-            suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        typingTimer = setTimeout(() => {
-            suggestionsBox.innerHTML = `
-                <div class="suggestion-item" onclick="selectSuggestion('${query}')">🎵 ${query} - Original</div>
-                <div class="suggestion-item" onclick="selectSuggestion('${query} Remix')">🎧 ${query} Remix</div>
-                <div class="suggestion-item" onclick="selectSuggestion('${query} Slowed')">🌧️ ${query} Slowed Reverb</div>
-            `;
-            suggestionsBox.style.display = 'flex';
-        }, 300);
-    }
-
-    function selectSuggestion(songName) {
-        inputField.value = songName;
-        suggestionsBox.style.display = 'none';
-        searchSong();
-    }
-
-    document.addEventListener('click', function(e) {
-        if (!document.querySelector('.search-wrapper').contains(e.target)) {
-            suggestionsBox.style.display = 'none';
         }
     });
 
@@ -356,32 +330,50 @@
         
         const spinner = document.getElementById('spinner');
         const resultDiv = document.getElementById('result');
+        
+        // New DOM elements to update
         const titleEl = document.getElementById('songTitle');
+        const artistEl = document.getElementById('artistName');
+        const artEl = document.getElementById('resultArt');
+        const audioEl = document.getElementById('audioPlayer');
         const linkEl = document.getElementById('downloadLink');
 
         if (!query) return;
 
-        inputField.blur(); // Hides Android keyboard automatically when searching
+        inputField.blur();
         spinner.style.display = 'block';
         resultDiv.style.display = 'none';
-        suggestionsBox.style.display = 'none';
+        
+        // Stop any currently playing audio
+        audioEl.pause();
 
         try {
+            // Reaches out to your live Render backend
             const response = await fetch(`https://my-song-brain.onrender.com/api/search?q=${encodeURIComponent(query)}&region=${region}&quality=${quality}`);
             const data = await response.json();
 
             spinner.style.display = 'none';
 
             if (data.success) {
-                titleEl.textContent = `${data.title} [${region.toUpperCase()} - ${quality}kbps]`;
+                // Populate the new data!
+                titleEl.textContent = data.title;
+                artistEl.textContent = `${data.artist} • ${data.album}`;
+                artEl.src = data.cover_art || 'https://via.placeholder.com/150/0a0a0a/00ffcc?text=No+Cover'; 
+                
+                // Load the audio player
+                audioEl.src = data.url;
+                
+                // Set the download button
                 linkEl.href = data.url;
+                
+                // Show the beautifully populated card
                 resultDiv.style.display = 'block';
             } else {
-                alert("Song not found!");
+                alert(data.message || "Song not found!");
             }
         } catch (error) {
             spinner.style.display = 'none';
-            alert("Failed to connect to the backend!");
+            alert("Failed to connect to the backend! Is your Render server awake?");
         }
     }
 </script>
