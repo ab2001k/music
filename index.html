@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Finder</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            border: 1px solid #00ffcc;
+        }
+        button {
+            background: linear-gradient(45deg, #00ffcc, #00b3ff);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: #121212;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00ffcc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #result {
+            margin-top: 20px;
+            display: none;
+        }
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            background: #ff007f;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <h2>Neon Search</h2>
+    <input type="text" id="songInput" placeholder="Enter song name...">
+    <button onclick="searchSong()">Search</button>
+    
+    <div class="spinner" id="spinner"></div>
+    
+    <div id="result">
+        <h3 id="songTitle"></h3>
+        <a href="#" id="downloadLink" class="download-btn" target="_blank">Download MP3</a>
+    </div>
+</div>
+
+<script>
+    async function searchSong() {
+        const query = document.getElementById('songInput').value;
+        const spinner = document.getElementById('spinner');
+        const resultDiv = document.getElementById('result');
+        const titleEl = document.getElementById('songTitle');
+        const linkEl = document.getElementById('downloadLink');
+
+        if (!query) return;
+
+        // Show spinner, hide previous result
+        spinner.style.display = 'block';
+        resultDiv.style.display = 'none';
+
+        try {
+            // Talk to your Python Brain
+            const response = await fetch(`http://127.0.0.1:5000/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            // Hide spinner
+            spinner.style.display = 'none';
+
+            if (data.success) {
+                titleEl.textContent = data.title;
+                linkEl.href = data.url;
+                resultDiv.style.display = 'block';
+            } else {
+                alert("Song not found!");
+            }
+        } catch (error) {
+            spinner.style.display = 'none';
+            alert("Failed to connect to the brain!");
+        }
+    }
+</script>
+
+</body>
+</html>
