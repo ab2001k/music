@@ -27,6 +27,7 @@ def search_song():
 
     # 3. Build the secure API request
     safe_query = urllib.parse.quote(query)
+    # limit=3 tells the database we want the top 3 results
     api_url = f"https://itunes.apple.com/search?term={safe_query}&media=music&entity=song&limit=3&country={country_code}"
 
     try:
@@ -34,34 +35,38 @@ def search_song():
         response = requests.get(api_url, timeout=10) # Added a 10-second timeout so it doesn't hang forever
         data = response.json()
 
-        # 4. Process the "Best Match"
-        if data['resultCount'] > 0:
-            # Grab the absolute #1 most relevant result
-            best_match = data['results'][0]
+        # 4. Process the Top Matches
+        if data.get('resultCount', 0) > 0:
+            top_tracks = []
             
-            # Extract the raw data
-            song_title = best_match.get('trackName', 'Unknown Title')
-            artist_name = best_match.get('artistName', 'Unknown Artist')
-            album_name = best_match.get('collectionName', 'Unknown Album')
-            audio_url = best_match.get('previewUrl', '')
+            # Loop through the results (up to 3)
+            for item in data['results']:
+                audio_url = item.get('previewUrl', '')
+                
+                # Safety check: only add the track if there is actually an audio file attached
+                if audio_url:
+                    # The "Secret" High-Res Artwork Trick
+                    low_res_art = item.get('artworkUrl100', '')
+                    high_res_art = low_res_art.replace('100x100bb', '600x600bb') if low_res_art else ''
+                    
+                    # Package this specific track
+                    track_info = {
+                        "title": item.get('trackName', 'Unknown Title'),
+                        "artist": item.get('artistName', 'Unknown Artist'),
+                        "album": item.get('collectionName', 'Unknown Album'),
+                        "cover_art": high_res_art,
+                        "url": audio_url
+                    }
+                    top_tracks.append(track_info)
             
-            # 5. The "Secret" High-Res Artwork Trick
-            # Apple sends a tiny 100x100 image by default. We dynamically rewrite the URL to get a crisp 600x600 image.
-            low_res_art = best_match.get('artworkUrl100', '')
-            high_res_art = low_res_art.replace('100x100bb', '600x600bb') if low_res_art else ''
+            # If we filtered out broken tracks and ended up with nothing
+            if not top_tracks:
+                return jsonify({"success": False, "message": "No playable audio found for this search."}), 404
 
-            # Safety check: ensure there is actually an audio file attached
-            if not audio_url:
-                return jsonify({"success": False, "message": "No audio file available for this specific track."}), 404
-
-            # 6. Package it beautifully and send it back to the Face
+            # 5. Send the ARRAY back to the Face
             return jsonify({
                 "success": True,
-                "title": song_title,
-                "artist": artist_name,
-                "album": album_name,
-                "cover_art": high_res_art,
-                "url": audio_url
+                "results": top_tracks
             })
         else:
             return jsonify({"success": False, "message": "Song not found in the global database!"}), 404
