@@ -3,90 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Song Finder</title>
+    <title>Neon Song Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #00ffcc;
+            --secondary: #b026ff;
+            --bg-dark: #0a0a0a;
+        }
+
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
         }
+
+        /* Moving Album Background Setup */
+        .background-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: -2;
+            opacity: 0.4; /* Dimmed so the text is readable */
+            transform: rotate(-10deg) scale(1.5);
+        }
+
+        .album-row {
+            display: flex;
+            gap: 20px;
+            animation: scroll 40s linear infinite;
+        }
+
+        .album-row.reverse {
+            animation: scroll-reverse 50s linear infinite;
+        }
+
+        .album-cover {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Dark overlay to make the UI pop */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.9) 100%);
+            z-index: -1;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes scroll-reverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Modern Glass Card */
         .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            width: 350px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 50px 40px;
+            width: 380px;
             text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            z-index: 10;
         }
+
+        h2 {
+            margin-top: 0;
+            font-weight: 600;
+            font-size: 28px;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
         input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             margin-bottom: 20px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
             color: white;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
             outline: none;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
+
         input[type="text"]:focus {
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
-            border: 1px solid #00ffcc;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+            background: rgba(0, 0, 0, 0.5);
         }
+
         button {
-            background: linear-gradient(45deg, #00ffcc, #00b3ff);
+            background: linear-gradient(135deg, var(--primary), #0099ff);
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: #121212;
-            font-weight: bold;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 600;
+            font-size: 16px;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         button:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 204, 0.4);
         }
+
         .spinner {
             display: none;
-            margin: 20px auto;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid #00ffcc;
+            margin: 30px auto 10px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--secondary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
         #result {
-            margin-top: 20px;
+            margin-top: 30px;
             display: none;
+            animation: fadeIn 0.5s ease;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #songTitle {
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+
         .download-btn {
             display: inline-block;
-            margin-top: 10px;
             text-decoration: none;
-            background: #ff007f;
+            background: transparent;
+            border: 2px solid var(--secondary);
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+            box-shadow: 0 0 15px rgba(176, 38, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
+<div class="background-wrapper">
+    <div class="album-row">
+        <img src="https://picsum.photos/400?random=1" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=2" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=3" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=4" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=5" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=6" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=1" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=2" class="album-cover" alt="album">
+    </div>
+    <div class="album-row reverse">
+        <img src="https://picsum.photos/400?random=7" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=8" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=9" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=10" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=11" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=12" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=7" class="album-cover" alt="album">
+        <img src="https://picsum.photos/400?random=8" class="album-cover" alt="album">
+    </div>
+</div>
+
+<div class="overlay"></div>
+
 <div class="glass-card">
     <h2>Neon Search</h2>
-    <input type="text" id="songInput" placeholder="Enter song name...">
+    <input type="text" id="songInput" placeholder="Enter a song name...">
     <button onclick="searchSong()">Search</button>
     
     <div class="spinner" id="spinner"></div>
@@ -112,8 +252,8 @@
         resultDiv.style.display = 'none';
 
         try {
-            // Talk to your Python Brain
-            const response = await fetch(`http://127.0.0.1:5000/api/search?q=${encodeURIComponent(query)}`);
+            // Connected to your live Render backend
+            const response = await fetch(`https://my-song-brain.onrender.com/api/search?q=${encodeURIComponent(query)}`);
             const data = await response.json();
 
             // Hide spinner
